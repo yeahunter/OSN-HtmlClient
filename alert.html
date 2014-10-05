@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>Twitch Alerter @ peti</title>
+</head>
+<body>
+    <center><h1>Peti cucca jelez neked :)</h1></center>
+    <p>
+        <center><span style="display: block; width: 55px;">Statusz:</span>
+        <span class="online" style="display:none; color:green">Online</span>
+        <span class="offline" style="display:block; color:red">Offline</span></center>
+    </p>
+    <script src="/js/jquery.min.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+    <script src="/js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+    <script type="text/javascript" language="javascript" charset="utf-8">
+    // <![CDATA[
+    
+    function messageReceived(text, id, channel) {
+    var currentdate = new Date(); 
+    var datetime = currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+      window.alert(datetime + " - " + text);
+    };
+
+    function _statuschanged(state) {
+      if (state == PushStream.OPEN) {
+        $(".offline").hide();
+        $(".online").show();
+      } else {
+        $(".offline").show();
+        $(".online").hide();
+      }
+    };
+    
+    PushStream.LOG_LEVEL = 'debug';
+    var pushstream = new PushStream({
+      host: 'push.peti.ml',
+      port: window.location.port,
+      modes: "longpolling"
+    });
+    pushstream.onmessage = messageReceived;
+    pushstream.onstatuschange = _statuschanged;
+    pushstream.addChannel('streams');
+    pushstream.connect();
+    // ]]>
+    </script>
+</body>
+</html>
