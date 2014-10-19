@@ -17,12 +17,14 @@
     <script type="text/javascript" language="javascript" charset="utf-8">
     // <![CDATA[
     
+    window.onload = notifyMe("");
+
     function messageReceived(text, id, channel) {
     var currentdate = new Date(); 
     var datetime = currentdate.getHours() + ":"  
                 + currentdate.getMinutes() + ":" 
                 + currentdate.getSeconds();
-      window.alert(datetime + " - " + text);
+      notifyMe(datetime + " - " + text);
     };
 
     function _statuschanged(state) {
@@ -35,6 +37,37 @@
       }
     };
     
+    function notifyMe(text) {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notification");
+      }
+
+      else if (Notification.permission === "granted" && text !== "") {
+        var notification = new Notification(text);
+        notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
+      }
+
+      else if (Notification.permission === "granted" && text === "") {
+        var notification = new Notification("Peti cucca mostantól figyel!");
+        notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
+      }
+
+      else if (Notification.permission !== 'denied') {
+        Notification.requestPermission(function (permission) {
+
+          if(!('permission' in Notification)) {
+            Notification.permission = permission;
+          }
+
+          // If the user is okay, let's create a notification
+          if (permission === "granted") {
+            var notification = new Notification("Peti cucca mostantól értesíteni fog!");
+            notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
+          }
+        });
+      }
+    }
+
     PushStream.LOG_LEVEL = 'debug';
     var pushstream = new PushStream({
       host: 'push.peti.ml',
