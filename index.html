@@ -20,11 +20,7 @@
     window.onload = notifyMe("");
     
     function messageReceived(text, id, channel) {
-    var currentdate = new Date(); 
-    var datetime = currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-      notifyMe(datetime + " - " + text);
+        notifyMe(text);
     };
 
     function _statuschanged(state) {
@@ -37,14 +33,50 @@
       }
     };
     
+    function requestServerCall(url) {
+      var head = document.head;
+      var script = document.createElement("script");
+
+      script.setAttribute("src", url);
+      head.appendChild(script);
+      head.removeChild(script);
+    }
+
+    function TwitchTV(data){
+      for (var property in data) {
+        if (property === "streams") {
+          var url = data[property][0]['channel']['url'];
+          var displayname = data[property][0]['channel']['display_name'];
+          var status = data[property][0]['channel']['status'];
+          var logo = data[property][0]['channel']['logo'];
+
+          var notification = new Notification("TwitchTV | " + displayname + " just went live!", { body: status, icon: logo });
+          notification.onshow = function() {  setTimeout(function(){notification.close();},10000) }
+          notification.onclick = function() {  window.open(url); }
+        }
+      }
+    }
+
     function notifyMe(text) {
       if (!("Notification" in window)) {
         alert("This browser does not support desktop notification");
       }
 
       else if (Notification.permission === "granted" && text !== "") {
-        var notification = new Notification(text);
-        notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
+        var re = /([a-zA-Z0-9_-]\w+)/g;
+        var m;
+        var array = [];
+
+        while ((m = re.exec(text)) != null) {
+          if (m.index === re.lastIndex) {
+            re.lastIndex++;
+          }
+          array.push(m[0]);
+        }
+
+        if (array.length === 4) {
+          requestServerCall("https://api.twitch.tv/kraken/streams?limit=100&channel=" + array[3] + "&callback=TwitchTV");
+        }
       }
 
       else if (Notification.permission === "granted" && text === "") {
