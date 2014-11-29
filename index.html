@@ -3,22 +3,22 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>Twitch Alerter @ peti</title>
+    <title>Pls Notify Me @ yeahunter</title>
 </head>
 <body>
-    <center><h1>Peti cucca jelez neked :)</h1></center>
+    <center><h1>Pls Notify Me ALFA</h1></center>
     <p>
         <center><span style="display: block; width: 55px;">Statusz:</span>
         <span class="online" style="display:none; color:green">Online</span>
         <span class="offline" style="display:block; color:red">Offline</span></center>
     </p>
-    <script src="/js/jquery.min.js" type="text/javascript" language="javascript" charset="utf-8"></script>
-    <script src="/js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+    <script src="js/jquery.min.js" type="text/javascript" language="javascript" charset="utf-8"></script>
+    <script src="js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script type="text/javascript" language="javascript" charset="utf-8">
     // <![CDATA[
     
     window.onload = notifyMe("");
-
+    
     function messageReceived(text, id, channel) {
     var currentdate = new Date(); 
     var datetime = currentdate.getHours() + ":"  
@@ -48,7 +48,7 @@
       }
 
       else if (Notification.permission === "granted" && text === "") {
-        var notification = new Notification("Peti cucca mostantól figyel!");
+        var notification = new Notification("A Pls Notify Me mostantól figyel!");
         notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
       }
 
@@ -61,13 +61,13 @@
 
           // If the user is okay, let's create a notification
           if (permission === "granted") {
-            var notification = new Notification("Peti cucca mostantól értesíteni fog!");
+            var notification = new Notification("A Pls Notify Me mostantól értesíteni fog!");
             notification.onshow = function() {  setTimeout(function(){notification.close();},4000) }
           }
         });
       }
     }
-
+    
     PushStream.LOG_LEVEL = 'debug';
     var pushstream = new PushStream({
       host: 'push.peti.ml',
