@@ -15,10 +15,17 @@
     <center>TwitchTV nevem: <input id="TwitchTVChannel" type="text" name="TwitchTVChannel" onkeypress="return entercsekk(event)">
     <button id="baton" type="button" onclick="getFollowers()">apli</button></center>
 
+    <script src="js/cookies.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script src="js/jquery.min.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script src="js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script type="text/javascript" language="javascript" charset="utf-8">
     // <![CDATA[
+
+    if (docCookies.getItem("TwitchUser") !== null && docCookies.getItem("TwitchUser") !== "")
+    {
+      document.getElementById('TwitchTVChannel').value = docCookies.getItem("TwitchUser");
+      getFollowers();
+    }
 
     var followers = [];
     
@@ -34,10 +41,17 @@
         }
       }
       if (followers.length > 0)
+      {
         document.getElementById('onlinefollow').innerHTML = " Szures: akiket \"" + document.getElementById('TwitchTVChannel').value + "\" kovet";
+        if (docCookies.getItem("TwitchUser") !== document.getElementById('TwitchTVChannel').value) {
+          docCookies.setItem("TwitchUser", document.getElementById('TwitchTVChannel').value);
+        }
+      }
       else
+      {
         document.getElementById('onlinefollow').innerHTML = "";
-      // console.log(followers);
+        docCookies.removeItem("TwitchUser");
+      }
     }
 
     // lekeri az apibol az adott user followerjeit
@@ -72,7 +86,7 @@
         $(".online").hide();
       }
     };
-    
+
     function requestServerCall(url) {
       var head = document.head;
       var script = document.createElement("script");
@@ -142,7 +156,7 @@
         });
       }
     }
-    
+
     PushStream.LOG_LEVEL = 'debug';
     var pushstream = new PushStream({
       host: 'push.peti.ml',
