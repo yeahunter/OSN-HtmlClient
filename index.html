@@ -9,14 +9,54 @@
     <center><h1>Pls Notify Me ALFA</h1></center>
     <p>
         <center><span style="display: block; width: 55px;">Statusz:</span>
-        <span class="online" style="display:none; color:green">Online</span>
+        <span class="online" style="display:none; color:green">Online<div id="onlinefollow"></div></span>
         <span class="offline" style="display:block; color:red">Offline</span></center>
     </p>
+    <center>TwitchTV nevem: <input id="TwitchTVChannel" type="text" name="TwitchTVChannel" onkeypress="return entercsekk(event)">
+    <button id="baton" type="button" onclick="getFollowers()">apli</button></center>
+
     <script src="js/jquery.min.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script src="js/pushstream.js" type="text/javascript" language="javascript" charset="utf-8"></script>
     <script type="text/javascript" language="javascript" charset="utf-8">
     // <![CDATA[
+
+    var followers = [];
     
+    // Callback function
+    function TwitchTV_followers(data){
+      followers = [];
+
+      for (var property in data) {
+        if (property === "follows") {
+          for (var lel in data[property]) {
+            followers.push(data[property][lel]["channel"]["name"]);
+          }
+        }
+      }
+      if (followers.length > 0)
+        document.getElementById('onlinefollow').innerHTML = " Szures: akiket \"" + document.getElementById('TwitchTVChannel').value + "\" kovet";
+      else
+        document.getElementById('onlinefollow').innerHTML = "";
+      // console.log(followers);
+    }
+
+    // lekeri az apibol az adott user followerjeit
+    function getFollowers() {
+      requestServerCall("https://api.twitch.tv/kraken/users/" + document.getElementById('TwitchTVChannel').value + "/follows/channels?limit=100&callback=TwitchTV_followers");
+    }
+
+    // inputban enter-t figyel
+    function entercsekk(e) {
+      if (e.keyCode == 13) {
+        getFollowers();
+        return false;
+      }
+      else
+        return true;
+    }
+
+
+
     window.onload = notifyMe("");
     
     function messageReceived(text, id, channel) {
@@ -47,12 +87,15 @@
         if (property === "streams") {
           var url = data[property][0]['channel']['url'];
           var displayname = data[property][0]['channel']['display_name'];
+          var name = data[property][0]['channel']['name'];
           var status = data[property][0]['channel']['status'];
           var logo = data[property][0]['channel']['logo'];
 
-          var notification = new Notification("TwitchTV | " + displayname + " just went live!", { body: status, icon: logo });
-          notification.onshow = function() {  setTimeout(function(){notification.close();},10000) }
-          notification.onclick = function() {  window.open(url); }
+          if (followers.length === 0 || (followers.indexOf(name) != -1 && followers.length > 0)) {
+            var notification = new Notification("TwitchTV | " + displayname + " just went live!", { body: status, icon: logo });
+            notification.onshow = function() {  setTimeout(function(){notification.close();},10000) }
+            notification.onclick = function() {  window.open(url); }
+          }
         }
       }
     }
